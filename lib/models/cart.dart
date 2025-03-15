@@ -7,7 +7,6 @@ import 'package:shop_app/models/product.dart';
 class Cart with ChangeNotifier {
   Map<String, CartItem> _items = {};
 
-
   Map<String, CartItem> get items {
     return {..._items};
   }
@@ -25,30 +24,30 @@ class Cart with ChangeNotifier {
   }
 
   void addItem(Product product) {
-    if(_items.containsKey(product.id)) {
+    if (_items.containsKey(product.id)) {
       _items.update(
         product.id,
         (existingItem) => CartItem(
           id: existingItem.id,
           productId: existingItem.productId,
-          name: existingItem.name, 
-          quantity: existingItem.quantity + 1, 
+          name: existingItem.name,
+          quantity: existingItem.quantity + 1,
           price: existingItem.price,
         ),
       );
     } else {
       _items.putIfAbsent(
-        product.id, 
+        product.id,
         () => CartItem(
           id: Random().nextDouble().toString(),
-          productId: product.id, 
-          name: product.name, 
-          quantity: 1, 
-          price: product.price
-        )
+          productId: product.id,
+          name: product.name,
+          quantity: 1,
+          price: product.price,
+        ),
       );
     }
-    notifyListeners(); 
+    notifyListeners();
   }
 
   void removeItem(String productId) {
@@ -56,9 +55,29 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
+  void removeSingleItem(String productId) {
+    if (!_items.containsKey(productId)) {
+      return;
+    }
+    if (_items[productId]?.quantity == 1) {
+      _items.remove(productId);
+    } else {
+      _items.update(
+        productId,
+        (existingItem) => CartItem(
+          id: existingItem.id,
+          productId: existingItem.productId,
+          name: existingItem.name,
+          quantity: existingItem.quantity - 1,
+          price: existingItem.price,
+        ),
+      );
+    }
+    notifyListeners();
+  }
+
   void clear() {
     _items = {};
     notifyListeners();
   }
-
 }
