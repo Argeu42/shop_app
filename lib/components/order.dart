@@ -17,6 +17,7 @@ class _OrderWidgetState extends State<OrderWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 5,
       child: ExpansionTile(
         title: Text('Pedido nº: ${widget.order.id}'),
         leading: Container(
@@ -27,23 +28,39 @@ class _OrderWidgetState extends State<OrderWidget> {
           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           child: Text(
             DateFormat('dd/MM/yyyy').format(widget.order.dateOrder),
-            style: TextStyle(color: Theme.of(context).textTheme.titleLarge?.color),
+            style: TextStyle(
+              color: Theme.of(context).textTheme.titleLarge?.color,
+            ),
           ),
         ),
         subtitle: Text('Valor: R\$${widget.order.total}'),
         shape: const Border(),
         children: [
+          Divider(
+            color: Theme.of(context).colorScheme.primary,
+            indent: 25,
+            endIndent: 25,
+          ),
           ...widget.order.products.map((products) {
             return ListTile(
-              title: InkWell(onTap: () {
-                Navigator.of(context).pushNamed(AppRoutes.productDetail, arguments: dummyProducts.firstWhere((prod) => prod.id == products.productId ));
-              },child: Text(products.name)),
+              title: InkWell(
+                onTap: () {
+                  Navigator.of(context).pushNamed(
+                    AppRoutes.productDetail,
+                    arguments: dummyProducts.firstWhere(
+                      (prod) => prod.id == products.productId,
+                    ),
+                  );
+                },
+                child: Text(products.name),
+              ),
               leading: CircleAvatar(
                 child: Text('${products.quantity.toString()}x'),
               ),
               trailing: Text('R\$${products.quantity * products.price}'),
             );
           }),
+          Padding(padding: EdgeInsets.only(bottom: 15))
         ],
       ),
     );

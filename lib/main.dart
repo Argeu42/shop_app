@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
           ),
           colorScheme: ColorScheme.light(
             primary: Colors.purple,
-            secondary: Colors.deepOrange,
+            secondary: Color(0xff3ce31c),
           ),
           primaryColor: Colors.red,
           fontFamily: 'Lato',
