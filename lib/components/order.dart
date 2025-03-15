@@ -33,7 +33,7 @@ class _OrderWidgetState extends State<OrderWidget> {
             ),
           ),
         ),
-        subtitle: Text('Valor: R\$${widget.order.total}'),
+        subtitle: Text('Valor: R\$${(widget.order.total).toStringAsFixed(2)}'),
         shape: const Border(),
         children: [
           Divider(
