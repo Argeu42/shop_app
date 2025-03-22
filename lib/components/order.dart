@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shop_app/data/dummy_data.dart';
 import 'package:shop_app/models/order.dart';
+import 'package:shop_app/models/product_list.dart';
 import 'package:shop_app/utils/app_routes.dart';
 
 class OrderWidget extends StatefulWidget {
@@ -16,6 +18,7 @@ class OrderWidget extends StatefulWidget {
 class _OrderWidgetState extends State<OrderWidget> {
   @override
   Widget build(BuildContext context) {
+    final ProductList productsList = Provider.of<ProductList>(context, listen: false);
     return Card(
       elevation: 5,
       child: ExpansionTile(
@@ -47,7 +50,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                 onTap: () {
                   Navigator.of(context).pushNamed(
                     AppRoutes.productDetail,
-                    arguments: dummyProducts.firstWhere(
+                    arguments: productsList.items.firstWhere(
                       (prod) => prod.id == products.productId,
                     ),
                   );
