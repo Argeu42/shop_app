@@ -13,71 +13,92 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  bool _isLoading = true;
+  late Future futureInstance;
 
   @override
   void initState() {
     super.initState();
-    Provider.of<OrderList>(context, listen: false).loadOrders().then((_) {
-      setState(() => _isLoading = false);
-    });
+    futureInstance =
+        Provider.of<OrderList>(context, listen: false).loadOrders();
   }
 
   @override
   Widget build(BuildContext context) {
-    final OrderList orders = Provider.of(context);
+    // OrderList orders = Provider.of<OrderList>(context);
     return Scaffold(
       appBar: AppBar(title: Text('Meus Pedidos')),
       drawer: AppDrawer(),
-      body:
-          _isLoading
-              ? Center(child: CircularProgressIndicator())
-              : orders.items.isEmpty
-              ? RefreshIndicator(
-                onRefresh: () => orders.loadOrders(),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Você ainda não fez pedidos!',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(
-                            context,
-                          ).pushReplacementNamed(AppRoutes.home);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                        ),
-                        child: Text(
-                          'Ir para a LOJA',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Theme.of(context).textTheme.titleLarge?.color,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              : RefreshIndicator(
-                onRefresh: () => orders.loadOrders(),
-                child: ListView.builder(
-                  itemCount: orders.itemsCount,
-                  itemBuilder:
-                      (ctx, index) => OrderWidget(order: orders.items[index]),
-                ),
+      body: FutureBuilder(
+        future: futureInstance,
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.error != null) {
+            return Center(child: Text('Ocorreu um erro!'));
+          } else {
+            return RefreshIndicator(
+              onRefresh:
+                  () =>
+                      Provider.of<OrderList>(
+                        context,
+                        listen: false,
+                      ).loadOrders(),
+              child: Consumer<OrderList>(
+                builder:
+                    (ctx, orders, child) =>
+                        orders.items.isEmpty
+                            ? NoOrdersWidget()
+                            : ListView.builder(
+                              itemCount: orders.itemsCount,
+                              itemBuilder:
+                                  (ctx, index) =>
+                                      OrderWidget(order: orders.items[index]),
+                            ),
               ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class NoOrdersWidget extends StatelessWidget {
+  const NoOrdersWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Você ainda não fez pedidos!',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+            child: Text(
+              'Ir para a LOJA',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Theme.of(context).textTheme.titleLarge?.color,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
