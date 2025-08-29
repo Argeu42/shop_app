@@ -83,7 +83,7 @@ class NoOrdersWidget extends StatelessWidget {
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+              Navigator.of(context).pushReplacementNamed(AppRoutes.auth_or_home);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
